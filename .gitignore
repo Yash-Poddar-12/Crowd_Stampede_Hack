@@ -1,0 +1,49 @@
+# =========================
+# DATASETS
+# =========================
+ShanghaiTech/
+data/
+datasets/
+training_data_graded_risk/
+training_data_model_data/
+
+# =========================
+# IMAGES
+# =========================
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.gif
+images/
+imgs/
+
+# =========================
+# YOLO PRETRAINED WEIGHTS (IGNORE THESE)
+# =========================
+yolov8*.pt
+
+# =========================
+# RAW DATA FORMATS
+# =========================
+*.csv
+*.xlsx
+*.mat
+*.h5
+*.npy
+*.npz
+*.json
+
+# =========================
+# CACHE / ENV
+# =========================
+__pycache__/
+*.pyc
+venv/
+.env/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+# =========================
