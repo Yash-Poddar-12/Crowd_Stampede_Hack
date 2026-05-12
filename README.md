@@ -29,54 +29,147 @@ Bicubic Interpolation: Smooths the 10x10 grid into a high-resolution heatmap.
 Sensitivity Boosting: Applies a multiplier (2.0x) to detect smaller clusters (3-4 people) as potential risk zones in lower-density environments.
 
 📂 Repository Structure
+
+- `create_new_model.py`: Script to create a new model architecture.
+- `create_validation.py`: Script for creating validation datasets.
+- `crowd_risk_model.pth`: Trained PyTorch model weights for crowd risk estimation.
+- `crowd_risk_pipeline.py`: Main pipeline script for crowd risk analysis.
+- `dbscan_model.py`: Implementation of DBSCAN clustering for crowd detection.
+- `detect_and_cluster.py`: Script to detect and cluster people in images.
+- `evaluate_model_v3.py`, `evaluate_model.py`: Scripts for evaluating model performance.
+- `generate_accurate_heatmaps.py`: Generates high-fidelity heatmaps using tiled inference.
+- `generate_graded_risk_data.py`: Generates graded risk data for training.
+- `generate_heatmaps.py`: Basic heatmap generation script.
+- `live_camera_demo.py`: Real-time demo using webcam feed.
+- `live_crowd_analysis.py`: Live crowd analysis script.
+- `live_demo.py`: General live demo script.
+- `live_heatmap_demo_batch.py`: Batch processing for live heatmap demos.
+- `live_heatmap_demo.py`: Live heatmap demo.
+- `live_heatmap_smooth.py`: Smooth heatmap generation for live feeds.
+- `live_heatmap_tiled.py`: Tiled heatmap for live analysis.
+- `matlab_data.py`: Script for handling MATLAB data formats.
+- `prepare_dataset.py`: Prepares datasets for training.
+- `README.md`: This file.
+- `real_time_pipeline.py`: Real-time processing pipeline.
+- `requirements.txt`: Python dependencies.
+- `run_batch_yolo.py`: Runs YOLO in batch mode.
+- `run_full_test.py`: Full test suite script.
+- `train_model_v2.py`, `train_model_v3_balanced.py`, `train_model_v4_robust.py`, `train_model.py`: Training scripts for different model versions.
+- `training_model_cluster.py`: Clustering-based training script.
+- `verify_data.py`: Data verification script.
+- `vizualization.py`: Visualization utilities (note: typo in filename).
+- `yolov8m.pt`, `yolov8x.pt`: Pre-trained YOLOv8 model weights.
+- `evaluation_results/`: Folder for evaluation outputs.
+- `final_accurate_results/`: High-accuracy results from tiled inference.
+- `final_heatmap_results/`: Final heatmap visualizations.
+- `final_metrics_report/`: Reports on model metrics.
+- `final_model_dataset/`: Processed dataset for the final model (with train/val/test splits).
+- `final_smoothed_results/`: Smoothed result outputs.
+- `heatmap_results/`, `heatmap_results_combined/`, `heatmap_results_smooth/`, `heatmap_results_tiled/`: Various heatmap result folders.
+- `results/`: General results folder.
+- `ShanghaiTech/`: ShanghaiTech crowd counting dataset (parts A and B).
+- `training_data_graded_risk/`: Graded risk training data.
+- `training_data_model_data/`: Model-specific training data.
+- `yolo_batch_results/`: Batch results from YOLO processing.
+
 🚀 Getting Started
 
 1. Prerequisites
-   You need Python 3.8+ installed.
+   - Python 3.8 or higher
+   - Git (for cloning the repository)
+   - Webcam (for live demos, optional)
 
 2. Installation
-   Clone the repo and install the required libraries:
+   Clone the repository and install the required dependencies:
+
+   ```bash
+   git clone <repository-url>
+   cd simulator
+   pip install -r requirements.txt
+   ```
+
+   Note: If you encounter issues with PyTorch, install it separately based on your CUDA version:
+
+   ```bash
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118  # For CUDA 11.8
+   ```
 
 3. Running the Live Demo (Webcam)
    This is the main presentation mode. It opens your default camera and overlays the risk grid in real-time.
 
-Controls: Press q to quit.
+   ```bash
+   python live_camera_demo.py
+   ```
 
-Note: If you are presenting alone, bring your face close to the camera or show a picture of a crowd on your phone to trigger the "Red" alert.
+   Controls: Press 'q' to quit.
+
+   Note: If presenting alone, bring your face close to the camera or show a picture of a crowd on your phone to trigger the "Red" alert.
 
 4. Running Static Analysis (Batch Processing)
    To process a folder of test images (e.g., from the ShanghaiTech dataset) and generate heatmaps:
 
-Results will be saved in the final_accurate_results/ folder.
+   ```bash
+   python generate_accurate_heatmaps.py --input_folder ShanghaiTech/part_A/test_data/images --output_folder final_accurate_results/
+   ```
+
+   Results will be saved in the `final_accurate_results/` folder.
+
+5. Training a New Model
+   To train the crowd risk model:
+
+   ```bash
+   python train_model.py
+   ```
+
+   Or use one of the variant scripts like `train_model_v4_robust.py` for different configurations.
+
+6. Evaluating the Model
+   To evaluate model performance:
+
+   ```bash
+   python evaluate_model.py
+   ```
+
+7. Preparing Dataset
+   To prepare the dataset for training:
+
+   ```bash
+   python prepare_dataset.py
+   ```
 
 🧪 Documentation of Key Scripts
-live_camera_demo.py
-Purpose: Real-time inference pipeline using OpenCV.
 
-Input: Webcam feed (Source 0).
-
-Preprocessing: Resizes frames to 512x512 and normalizes RGB values.
-
-Inference: PyTorch model predicts 100 density values per frame.
-
-Visualization: Maps values to colors (Green < Yellow < Orange < Red) and blends them onto the video feed.
-
-generate_accurate_heatmaps.py
-Purpose: High-fidelity analysis for reports.
-
-Technique: Uses Tiled Inference. Instead of shrinking a large image (which loses detail), it cuts the image into 512x512 tiles, analyzes each tile separately, and stitches the heatmap back together. This ensures maximum accuracy for large surveillance photos.
+- `live_camera_demo.py`: Real-time inference pipeline using OpenCV. Input: Webcam feed. Preprocessing: Resize to 512x512, normalize. Inference: Predict 100 density values. Visualization: Color-coded overlay.
+- `generate_accurate_heatmaps.py`: High-fidelity analysis using tiled inference for large images. Cuts images into tiles, processes each, stitches results.
+- `train_model.py`: Trains the ResNet-18 based density regressor on crowd data.
+- `evaluate_model.py`: Evaluates model accuracy using metrics like MAE, MSE on test data.
+- `detect_and_cluster.py`: Uses YOLO for person detection and DBSCAN for clustering.
+- `real_time_pipeline.py`: End-to-end real-time processing pipeline.
+- `run_batch_yolo.py`: Batch processing with YOLO for crowd detection.
+- Other scripts: Various utilities for data preparation, visualization, and testing.
 
 📦 Dependencies (requirements.txt)
-Create a file named requirements.txt and paste this inside:
+
+```
+ultralytics
+opencv-python
+scikit-learn
+matplotlib
+scipy
+numpy
+torch
+torchvision
+```
+
+Note: PyTorch versions may need to be adjusted based on your system (CPU/GPU, CUDA version).
 
 🔮 Future Improvements
-Multi-Camera Fusion: Stitching heatmaps from multiple angles into a single floor plan.
 
-Alert API: Sending automatic webhooks (SMS/Email) to security teams when a "Red Zone" persists for >10 seconds.
-
-Edge Deployment: Optimizing the model with TensorRT to run on Jetson Nano devices.
+- Multi-Camera Fusion: Stitching heatmaps from multiple angles into a single floor plan.
+- Alert API: Sending automatic webhooks (SMS/Email) to security teams when a "Red Zone" persists for >10 seconds.
+- Edge Deployment: Optimizing the model with TensorRT to run on Jetson Nano devices.
 
 🏆 Acknowledgments
-Dataset: ShanghaiTech Crowd Counting Dataset
 
-Model Backbone: PyTorch ResNet
+- Dataset: ShanghaiTech Crowd Counting Dataset
+- Model Backbone: PyTorch ResNet-18
